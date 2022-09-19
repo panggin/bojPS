@@ -15,7 +15,7 @@ vector<int> minCost(MAX_N, INT_MAX);// 도시별 최소 비용
 int dijkstra(int from, int to)
 {
     priority_queue<pair<int,int>, vector<pair<int,int>>, 
-                less<pair<int,int>>> pq; // 우선순위 큐 초기화
+                greater<pair<int,int>>> pq; // 우선순위 큐 초기화
     
     pq.push({0,from}); // 비용을 우선순위로 사용
     minCost[from] = 0;
