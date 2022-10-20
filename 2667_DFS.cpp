@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstdio>
-#include <queue>
+#include <stack>
 #include <utility>
 #include <set>
 using namespace std;
@@ -15,24 +15,39 @@ int dc[DIR_CNT] = {0,0,-1,1}; // 열 이동 방향 지정
 int map[MAX_N][MAX_N] = {0,};
 multiset<int> houses; // 단지 내 집 수 저장 테이블
 
-int BFS(int row, int col, int tag)
+// 재귀함수를 활용한 DFS 함수
+int DFS_recursive(int row, int col, int tag, int houseCnt)
+{
+    map[row][col] = tag; houseCnt++; // 현재 노드 방문 처리
+
+    for (int dir=0; dir<DIR_CNT; dir++) { // 상하좌우 노드 확인
+        int nr = row + dr[dir], nc = col + dc[dir];
+        if (nr>=0 && nr<n && nc>=0 && nc<n && map[nr][nc]==1) {
+            houseCnt = DFS_recursive(nr, nc, tag, houseCnt); // 다음 노드로 이동
+        }
+    }
+    return houseCnt;
+}
+
+// 스택을 활용한 DFS 함수
+int DFS_stack(int row, int col, int tag)
 {
     int houseCnt, currR, currC, nr, nc, dir;
 
     // 시작 노드 설정
-    queue<pair<int,int>> nxtNodes; nxtNodes.push({row, col});
+    stack<pair<int,int>> nxtNodes; nxtNodes.push({row, col});
     map[row][col] = tag; houseCnt = 1;
 
     while (!nxtNodes.empty()) {
-        // 현재 노드 가져오기 (큐에서 가장 앞에 있는 노드 가져오기)
-        currR = nxtNodes.front().first;
-        currC = nxtNodes.front().second; nxtNodes.pop();
+        // 현재 노드 가져오기 (스택의 top 노드 가져오기)
+        currR = nxtNodes.top().first;
+        currC = nxtNodes.top().second; nxtNodes.pop();
 
         for (dir=0; dir<DIR_CNT; dir++) { // 상하좌우 노드 확인
             nr = currR + dr[dir]; nc = currC + dc[dir];
             if (nr>=0 && nr<n && nc>=0 && nc<n && map[nr][nc]==1) {
                 map[nr][nc] = tag; houseCnt++; // 다음 노드 방문 처리
-                nxtNodes.push({nr, nc}); // 다음 노드 큐에 저장
+                nxtNodes.push({nr, nc}); // 다음 노드 스택에 저장
             }
         }
     }
@@ -48,8 +63,9 @@ int main()
 
     for (i=0; i<n; i++) {
         for (j=0; j<n; j++) {
-            if (map[i][j] == 1) { // 단지 번호 부여 여부 확인
-                int houseCnt = BFS(i,j, groupNum++);
+            if (map[i][j] == 1) {
+                int houseCnt = DFS_recursive(i,j, groupNum++, 0); // 재귀함수 DFS
+                // int houseCnt = DFS_stack(i,j, groupNum++); // 스택 DFS
                 houses.insert(houseCnt);
             }
         }
