@@ -48,10 +48,10 @@ int main()
 
     for (i=0; i<n; i++) {
         for (j=0; j<n; j++) {
-            if (map[i][j] == 1) {
+            if (map[i][j] == 1) { // 단지 번호 부여 여부 확인
                 int houseCnt = BFS(i,j, groupNum++);
                 houses.insert(houseCnt);
-            };
+            }
         }
     }
 
